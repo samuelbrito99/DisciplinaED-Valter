@@ -1,6 +1,7 @@
 // Organização da memória do seu programa no computador.
 // Cada região está organizada dentro de blocos de 4kB (dependendo do sistema)
 // para garantir o alinhamento entre os blocos de memória do programa.
+
 // +---------------------+  <- Endereços mais baixos
 // |     Code (TEXT)     |  <- Código do programa
 // |---------------------|
@@ -18,29 +19,31 @@
 
 #include <stdio.h>
 
-int variavel1 = 65536;
+int global_init = 10;       // Variável global inicializada -> DATA
+static int static_init = 20; // Variável estática inicializada -> DATA
 
-void imprime(void);
+int global_var;             // Variável global NÃO inicializada -> BSS
+static int static_var;      // Variável estática NÃO inicializada -> BSS
 
 int main() {
+    int local_var = 30;  // Variável local -> STACK
 
-    printf("Endereço variavel1: %p\n", (void*)&variavel1);
-    printf("Valor variavel1: %d\n", variavel1);
+    // Impressão dos endereços
+    printf("Endereços ne memória principal:\n");
+    
+    printf("global_init (DATA) : %p\n", (void*)&global_init);
+    printf("static_init (DATA) : %p\n", (void*)&static_init);
 
-    imprime();
+    printf("global_var  (BSS)  : %p\n", (void*)&global_var);
+    printf("static_var  (BSS)  : %p\n", (void*)&static_var);
 
-    // Mantém o programa aberto para análise do consumo de memória no Gerenciador de Tarefas
-    getchar();
+    printf("local_var   (STACK): %p\n", (void*)&local_var);
+
+    // Cálculo da diferença de endereços entre BSS e DATA
+    int diff_bss_data = (void*)&global_var - (void*)&global_init;
+    printf("\nDistância entre BSS e DATA: %d bytes (%.0f KB)\n", diff_bss_data, diff_bss_data / 1024.0);
+
     return 0;
 }
 
-void imprime() {
-    int variavel2 = 1000;
 
-    printf("Endereço variavel2: %p\n", (void*)&variavel2);
-    printf("Valor variavel2: %d\n", variavel2);
-    
-    // Calcula a distância em KB entre a variável global e a local
-    int distancia = (void*)&variavel1 - (void*)&variavel2;
-    printf("Distância entre variavel1 e variavel2: %.0f kB\n", distancia / 1024.0);
-}
